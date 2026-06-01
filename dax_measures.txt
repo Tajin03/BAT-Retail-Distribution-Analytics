@@ -1,0 +1,41 @@
+// --- CORE FINANCIAL MEASURES ---
+
+--total revenue
+
+revenue = SUMX( orders,
+        orders[quantity_hl] * RELATED(products[product_price])
+    )
+    
+--total retailers revenue
+
+total retailer value = SUMX(orders,
+orders[quantity_hl]*RELATED(products[retailet_selling_price]))
+
+--total profit by whole channel
+channel trade = [total retailer value]-[revenue]
+
+--avaragew profit margin by retailers
+profit margin by retailers = abs( DIVIDE([channel trade],[revenue]))
+
+
+// --- SUBSET FILTERS ---
+--top 2 most genarated products
+
+Top 2 Products Revenue = 
+VAR Top2ProductsTable = 
+    TOPN(
+        2, 
+        VALUES(products[product_name]), 
+        [revenue], 
+        DESC
+    )
+RETURN
+    SUMX(
+        Top2ProductsTable, 
+        [revenue]
+    )
+    
+--top 2 highest genarated brand
+    top 2 brands revenue collection = CALCULATE([Top 2 Products Revenue]/[revenue])
+
+
